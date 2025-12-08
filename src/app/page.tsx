@@ -1,9 +1,5 @@
-import TestDashboard from '@/components/TestDashboard'
+import FullDashboard from '@/components/FullDashboard'
 
 export default function Home() {
-  return (
-    <main>
-      <TestDashboard />
-    </main>
-  )
+  return <FullDashboard />
 }
