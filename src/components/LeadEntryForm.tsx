@@ -58,7 +58,7 @@ export default function LeadEntryForm({ onLeadCreated }: LeadEntryFormProps) {
       // Insert to database
       const { error: insertError } = await supabase
         .from('leads')
-        .insert(leadData)
+        .insert([leadData])
 
       if (insertError) throw insertError
 
