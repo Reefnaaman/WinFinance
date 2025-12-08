@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Lead, Agent } from '@/lib/database.types'
+import LeadEntryForm from './LeadEntryForm'
 
 export default function TestDashboard() {
   const [leads, setLeads] = useState<Lead[]>([])
@@ -10,37 +11,37 @@ export default function TestDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true)
+  const fetchData = async () => {
+    try {
+      setLoading(true)
 
-        // Fetch agents
-        const { data: agentsData, error: agentsError } = await supabase
-          .from('agents')
-          .select('*')
-          .order('name')
+      // Fetch agents
+      const { data: agentsData, error: agentsError } = await supabase
+        .from('agents')
+        .select('*')
+        .order('name')
 
-        if (agentsError) throw agentsError
+      if (agentsError) throw agentsError
 
-        // Fetch leads
-        const { data: leadsData, error: leadsError } = await supabase
-          .from('leads')
-          .select('*')
-          .order('created_at', { ascending: false })
+      // Fetch leads
+      const { data: leadsData, error: leadsError } = await supabase
+        .from('leads')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-        if (leadsError) throw leadsError
+      if (leadsError) throw leadsError
 
-        setAgents(agentsData || [])
-        setLeads(leadsData || [])
-      } catch (error) {
-        console.error('Error:', error)
-        setError('שגיאה בטעינת הנתונים')
-      } finally {
-        setLoading(false)
-      }
+      setAgents(agentsData || [])
+      setLeads(leadsData || [])
+    } catch (error) {
+      console.error('Error:', error)
+      setError('שגיאה בטעינת הנתונים')
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchData()
   }, [])
 
@@ -81,9 +82,12 @@ export default function TestDashboard() {
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900">מערכת ניהול לידים</h1>
-            <p className="text-gray-600">סוכנות ביטוח פלג - בדיקת חיבור</p>
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">מערכת ניהול לידים</h1>
+              <p className="text-gray-600">סוכנות ביטוח פלג</p>
+            </div>
+            <LeadEntryForm onLeadCreated={fetchData} />
           </div>
 
           {/* Connection Status */}
