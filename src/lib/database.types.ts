@@ -14,7 +14,7 @@ export interface Database {
           id: string
           name: string
           email: string
-          role: 'admin' | 'coordinator' | 'agent'
+          role: 'admin' | 'coordinator' | 'agent' | 'lead_supplier'
           created_at: string
         }
         Insert: {
@@ -43,8 +43,11 @@ export interface Database {
           relevance_status: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי'
           assigned_agent_id: string | null
           meeting_date: string | null
-          status: 'לא תואם' | 'לקוח לא רצה' | 'תואם' | 'עסקה נסגרה' | null
+          scheduled_call_date: string | null
+          status: 'לא תואם' | 'תואם' | 'עסקה נסגרה' | 'התקיים מעק' | 'תואמה פגישה' | 'נכשל' | 'אין מענה' | 'נמכר' | 'אין מענה - לתאם מחדש' | 'התקיימה - נכשל' | 'התקיימה - נחתם' | 'התקיימה - במעקב' | null
           agent_notes: string | null
+          color_code: string | null
+          price: number | null
           updated_at: string
         }
         Insert: {
@@ -57,8 +60,11 @@ export interface Database {
           relevance_status?: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי'
           assigned_agent_id?: string | null
           meeting_date?: string | null
-          status?: 'לא תואם' | 'לקוח לא רצה' | 'תואם' | 'עסקה נסגרה' | null
+          scheduled_call_date?: string | null
+          status?: 'לא תואם' | 'תואם' | 'עסקה נסגרה' | 'התקיים מעק' | 'תואמה פגישה' | 'נכשל' | 'אין מענה' | 'נמכר' | 'אין מענה - לתאם מחדש' | 'התקיימה - נכשל' | 'התקיימה - נחתם' | 'התקיימה - במעקב' | null
           agent_notes?: string | null
+          color_code?: string | null
+          price?: number | null
           updated_at?: string
         }
         Update: {
@@ -71,8 +77,11 @@ export interface Database {
           relevance_status?: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי'
           assigned_agent_id?: string | null
           meeting_date?: string | null
-          status?: 'לא תואם' | 'לקוח לא רצה' | 'תואם' | 'עסקה נסגרה' | null
+          scheduled_call_date?: string | null
+          status?: 'לא תואם' | 'תואם' | 'עסקה נסגרה' | 'התקיים מעק' | 'תואמה פגישה' | 'נכשל' | 'אין מענה' | 'נמכר' | 'אין מענה - לתאם מחדש' | 'התקיימה - נכשל' | 'התקיימה - נחתם' | 'התקיימה - במעקב' | null
           agent_notes?: string | null
+          color_code?: string | null
+          price?: number | null
           updated_at?: string
         }
       }
@@ -84,7 +93,7 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      lead_status_enum: 'לא תואם' | 'לקוח לא רצה' | 'תואם' | 'עסקה נסגרה'
+      lead_status_enum: 'לא תואם' | 'תואם' | 'עסקה נסגרה' | 'התקיים מעק' | 'תואמה פגישה' | 'נכשל' | 'אין מענה' | 'נמכר'
       relevance_status_enum: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי'
       role_enum: 'admin' | 'coordinator' | 'agent'
       source_enum: 'Email' | 'Google Sheet' | 'Manual' | 'Other'

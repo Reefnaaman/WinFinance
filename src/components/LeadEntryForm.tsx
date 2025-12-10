@@ -56,8 +56,8 @@ export default function LeadEntryForm({ onLeadCreated }: LeadEntryFormProps) {
       }
 
       // Insert to database
-      const { error: insertError } = await supabase
-        .from('leads')
+      const { error: insertError } = await (supabase
+        .from('leads') as any)
         .insert([leadData])
 
       if (insertError) throw insertError
@@ -98,7 +98,7 @@ export default function LeadEntryForm({ onLeadCreated }: LeadEntryFormProps) {
       {/* Add Lead Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 font-medium"
+        className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors flex items-center gap-2 font-medium"
       >
         <span className="text-lg">➕</span>
         הוסף ליד חדש

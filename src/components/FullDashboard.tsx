@@ -93,10 +93,10 @@ export default function FullDashboard() {
     { id: 'year', label: 'שנה' },
   ];
 
-  // SIMPLE: Use database agents as-is, deduplicated
+  // PROPER: Agents + Admin (admin can also take leads, coordinator cannot)
   const agents = dbAgents
     .filter((agent, index, self) => index === self.findIndex((a) => a.id === agent.id)) // Remove duplicates
-    .filter(a => a.role === 'agent' || a.role === 'admin') // Only agents and admin
+    .filter(a => a.role === 'agent' || a.role === 'admin') // Agents + Admin (both can take leads)
     .map((agent, index) => {
       const colors = ['from-blue-500 to-blue-600', 'from-rose-500 to-rose-600', 'from-amber-500 to-amber-600', 'from-emerald-500 to-emerald-600', 'from-violet-500 to-violet-600'];
       const agentLeads = dbLeads.filter(l => l.assigned_agent_id === agent.id);
