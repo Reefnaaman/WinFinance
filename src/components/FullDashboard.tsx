@@ -1017,7 +1017,7 @@ export default function FullDashboard() {
                     status: activeStatus === 'all' ? undefined : activeStatus,
                     source: activeSource === 'all' ? undefined : activeSource
                   }}
-                  agents={agents.filter(a => a.role === 'agent')}
+                  agents={dbAgents.filter(a => a.role === 'agent')}
                 />
                 <LeadEntryForm onLeadCreated={fetchData} />
               </div>
@@ -1421,7 +1421,7 @@ export default function FullDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {agents.map((agent) => {
-          const total = agent.stats.matched + agent.stats.notInterested + agent.stats.closed + (agent.stats.notMatched || 0);
+          const total = agent.stats.matched + agent.stats.failed + agent.stats.closed + agent.stats.inProgress;
           const successRate = total > 0 ? Math.round(((agent.stats.matched + agent.stats.closed) / total) * 100) : 0;
 
           return (
@@ -1452,12 +1452,12 @@ export default function FullDashboard() {
                   <p className="text-xs text-blue-600">נסגר</p>
                 </div>
                 <div className="bg-amber-50 rounded-xl p-3 text-center">
-                  <p className="text-xl font-bold text-amber-600">{agent.stats.notMatched || 0}</p>
-                  <p className="text-xs text-amber-600">לא תואם</p>
+                  <p className="text-xl font-bold text-amber-600">{agent.stats.inProgress}</p>
+                  <p className="text-xs text-amber-600">בתהליך</p>
                 </div>
                 <div className="bg-red-50 rounded-xl p-3 text-center">
-                  <p className="text-xl font-bold text-red-600">{agent.stats.notInterested}</p>
-                  <p className="text-xs text-red-600">לא רצה</p>
+                  <p className="text-xl font-bold text-red-600">{agent.stats.failed}</p>
+                  <p className="text-xs text-red-600">נכשל</p>
                 </div>
               </div>
             </div>
@@ -1835,8 +1835,8 @@ export default function FullDashboard() {
           .insert([{
             name: newUser.name,
             email: newUser.email,
-            role: newUser.role
-          }])
+            role: newUser.role as any
+          }] as any)
           .select()
           .single();
 
@@ -1857,7 +1857,7 @@ export default function FullDashboard() {
       try {
         const { error } = await supabase
           .from('agents')
-          .update(updates)
+          .update(updates as any)
           .eq('id', userId);
 
         if (error) throw error;

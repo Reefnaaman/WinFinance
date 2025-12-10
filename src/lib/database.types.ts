@@ -21,14 +21,14 @@ export interface Database {
           id?: string
           name: string
           email: string
-          role?: 'admin' | 'coordinator' | 'agent'
+          role?: 'admin' | 'coordinator' | 'agent' | 'lead_supplier'
           created_at?: string
         }
         Update: {
           id?: string
           name?: string
           email?: string
-          role?: 'admin' | 'coordinator' | 'agent'
+          role?: 'admin' | 'coordinator' | 'agent' | 'lead_supplier'
           created_at?: string
         }
       }
@@ -95,7 +95,7 @@ export interface Database {
     Enums: {
       lead_status_enum: 'לא תואם' | 'תואם' | 'עסקה נסגרה' | 'התקיים מעק' | 'תואמה פגישה' | 'נכשל' | 'אין מענה' | 'נמכר'
       relevance_status_enum: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי'
-      role_enum: 'admin' | 'coordinator' | 'agent'
+      role_enum: 'admin' | 'coordinator' | 'agent' | 'lead_supplier'
       source_enum: 'Email' | 'Google Sheet' | 'Manual' | 'Other'
     }
     CompositeTypes: {
