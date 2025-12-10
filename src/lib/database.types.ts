@@ -14,7 +14,7 @@ export interface Database {
           id: string
           name: string
           email: string
-          role: 'admin' | 'coordinator' | 'agent' | 'lead_supplier'
+          role: 'admin' | 'coordinator' | 'agent'
           created_at: string
         }
         Insert: {

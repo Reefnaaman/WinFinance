@@ -128,13 +128,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           email: 'oriel@winfinance.com',
           role: 'agent',
           created_at: new Date().toISOString()
-        },
-        'supplier@winfinance.com': {
-          id: '8',
-          name: 'ספק לידים',
-          email: 'supplier@winfinance.com',
-          role: 'lead_supplier',
-          created_at: new Date().toISOString()
         }
       }
 

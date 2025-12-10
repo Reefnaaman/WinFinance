@@ -1819,7 +1819,7 @@ export default function FullDashboard() {
     const [newUser, setNewUser] = useState({
       name: '',
       email: '',
-      role: 'agent' as 'admin' | 'coordinator' | 'agent' | 'lead_supplier'
+      role: 'agent' as 'admin' | 'coordinator' | 'agent'
     });
 
     // Load users
@@ -1896,15 +1896,13 @@ export default function FullDashboard() {
     const roleLabels = {
       admin: 'מנהל',
       coordinator: 'מתאם',
-      agent: 'סוכן',
-      lead_supplier: 'ספק לידים'
+      agent: 'סוכן'
     };
 
     const roleColors = {
       admin: 'bg-purple-100 text-purple-800',
       coordinator: 'bg-blue-100 text-blue-800',
-      agent: 'bg-green-100 text-green-800',
-      lead_supplier: 'bg-orange-100 text-orange-800'
+      agent: 'bg-green-100 text-green-800'
     };
 
     return (
@@ -2012,7 +2010,6 @@ export default function FullDashboard() {
                     <option value="agent">סוכן</option>
                     <option value="coordinator">מתאם</option>
                     <option value="admin">מנהל</option>
-                    <option value="lead_supplier">ספק לידים</option>
                   </select>
                 </div>
               </div>
@@ -2072,7 +2069,6 @@ export default function FullDashboard() {
                     <option value="agent">סוכן</option>
                     <option value="coordinator">מתאם</option>
                     <option value="admin">מנהל</option>
-                    <option value="lead_supplier">ספק לידים</option>
                   </select>
                 </div>
               </div>
