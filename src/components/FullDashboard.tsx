@@ -213,6 +213,11 @@ export default function FullDashboard() {
   const emailLeads = dbLeads.filter(l => l.source === 'Email').length;
   const sheetsLeads = dbLeads.filter(l => l.source === 'Google Sheet').length;
 
+  // Calculate total revenue from closed deals with price
+  const totalRevenue = dbLeads
+    .filter(l => l.status === 'עסקה נסגרה' && l.price)
+    .reduce((sum, lead) => sum + (lead.price || 0), 0);
+
   const navItems = [
     { id: 'home', label: 'דף הבית', icon: '🏠' },
     { id: 'leads', label: 'לידים', icon: '📋' },
@@ -288,56 +293,72 @@ export default function FullDashboard() {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-slate-500 to-slate-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-xl">📊</span>
+      {/* Stats Grid - Compact */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-100">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-slate-500 to-slate-600 rounded-lg flex items-center justify-center shadow-md">
+              <span className="text-sm">📊</span>
             </div>
-            <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">
+            <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
               {totalLeads > 0 ? `${((closedLeads/totalLeads)*100).toFixed(0)}%` : '0%'}
             </span>
           </div>
-          <p className="text-4xl font-bold text-slate-800">{totalLeads}</p>
-          <p className="text-slate-500">סה״כ לידים</p>
+          <p className="text-2xl font-bold text-slate-800">{totalLeads}</p>
+          <p className="text-xs text-slate-500">סה״כ לידים</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-xl">✅</span>
+        <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-100">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-md">
+              <span className="text-sm">✅</span>
             </div>
-            <span className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">
+            <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
               {totalLeads > 0 ? `${((matchedLeads/totalLeads)*100).toFixed(0)}%` : '0%'}
             </span>
           </div>
-          <p className="text-4xl font-bold text-slate-800">{matchedLeads}</p>
-          <p className="text-slate-500">תואם</p>
+          <p className="text-2xl font-bold text-slate-800">{matchedLeads}</p>
+          <p className="text-xs text-slate-500">תואם</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-xl">🎉</span>
+        <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-100">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
+              <span className="text-sm">🎉</span>
             </div>
-            <span className="text-xs font-medium px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+            <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
               {totalLeads > 0 ? `${((closedLeads/totalLeads)*100).toFixed(0)}%` : '0%'}
             </span>
           </div>
-          <p className="text-4xl font-bold text-slate-800">{closedLeads}</p>
-          <p className="text-slate-500">עסקאות נסגרו</p>
+          <p className="text-2xl font-bold text-slate-800">{closedLeads}</p>
+          <p className="text-xs text-slate-500">עסקאות נסגרו</p>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-100">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <span className="text-xl">❌</span>
+        <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-100">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center shadow-md">
+              <span className="text-sm">❌</span>
             </div>
-            <span className="text-xs font-medium px-2 py-1 rounded-full bg-red-100 text-red-700">{failedLeads}</span>
+            <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-red-100 text-red-700">{failedLeads}</span>
           </div>
-          <p className="text-4xl font-bold text-slate-800">{failedLeads}</p>
-          <p className="text-slate-500">נכשל</p>
+          <p className="text-2xl font-bold text-slate-800">{failedLeads}</p>
+          <p className="text-xs text-slate-500">נכשל</p>
+        </div>
+
+        {/* Total Revenue Card */}
+        <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-100">
+          <div className="flex items-center justify-between mb-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shadow-md">
+              <span className="text-sm">₪</span>
+            </div>
+            <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">
+              {closedLeads > 0 ? `${dbLeads.filter(l => l.status === 'עסקה נסגרה' && l.price).length}/${closedLeads}` : '0/0'}
+            </span>
+          </div>
+          <p className="text-xl font-bold text-slate-800">
+            {totalRevenue.toLocaleString('he-IL', { style: 'currency', currency: 'ILS', minimumFractionDigits: 0 })}
+          </p>
+          <p className="text-xs text-slate-500">הכנסות מעסקאות</p>
         </div>
       </div>
 
@@ -488,7 +509,7 @@ export default function FullDashboard() {
           </div>
         </div>
 
-        {/* Agent Rankings - Ultra Compact */}
+        {/* Agent Rankings - Clean Design */}
         <div className="xl:col-span-3">
           <div className="bg-gradient-to-br from-white to-amber-50/30 rounded-2xl p-4 shadow-lg border border-slate-100/50 backdrop-blur-sm h-full">
             <div className="flex items-center justify-between mb-4">
@@ -500,7 +521,7 @@ export default function FullDashboard() {
               </h3>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            <div className="space-y-3">
               {dbAgents
                 .map(agent => {
                   const agentLeads = dbLeads.filter(lead => lead.assigned_agent_id === agent.id);
@@ -514,63 +535,72 @@ export default function FullDashboard() {
                   };
                 })
                 .sort((a, b) => b.closedLeads - a.closedLeads)
-                .slice(0, 4)
+                .slice(0, 5)
                 .map((agent, index) => {
-                  const maxLeads = Math.max(...dbAgents.map(a => {
+                  const maxClosedLeads = Math.max(...dbAgents.map(a => {
                     const leads = dbLeads.filter(lead => lead.assigned_agent_id === a.id);
                     return leads.filter(lead => lead.status === 'עסקה נסגרה').length;
                   }), 1);
-                  const percentage = (agent.closedLeads / maxLeads) * 100;
+                  const successBarWidth = (agent.closedLeads / maxClosedLeads) * 100;
 
                   return (
-                    <div key={agent.id} className="relative overflow-hidden bg-white/60 backdrop-blur-sm border border-white/50 rounded-lg p-3 hover:shadow-md transition-all">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className={`flex items-center justify-center w-6 h-6 rounded-lg font-bold text-xs text-white shadow-md ${
+                    <div key={agent.id} className="flex items-center justify-between p-3 bg-white/80 rounded-xl border border-white/60 hover:shadow-md transition-all">
+                      {/* Right side - Agent name and ranking */}
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-lg ${
                           index === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600' :
-                          index === 1 ? 'bg-gradient-to-br from-gray-400 to-gray-600' :
+                          index === 1 ? 'bg-gradient-to-br from-gray-300 to-gray-500' :
                           index === 2 ? 'bg-gradient-to-br from-amber-600 to-amber-800' :
-                          'bg-gradient-to-br from-blue-500 to-blue-600'
+                          index === 3 ? 'bg-gradient-to-br from-blue-500 to-blue-600' :
+                          'bg-gradient-to-br from-slate-400 to-slate-600'
                         }`}>
                           {index + 1}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-slate-800 truncate text-xs">{agent.name}</p>
-                          <p className="text-xs text-slate-500">{agent.totalLeads} לידים</p>
+                        <div>
+                          <div className="font-bold text-slate-800 text-sm">{agent.name}</div>
+                          <div className="text-xs text-slate-500">{agent.totalLeads} לידים</div>
                         </div>
-                        {index < 3 && (
-                          <span className="text-xs">
-                            {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
-                          </span>
-                        )}
                       </div>
 
-                      <div className="space-y-1.5">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-slate-600">עסקאות</span>
-                          <span className="font-bold text-xs">{agent.closedLeads}</span>
+                      {/* Left side - Metrics */}
+                      <div className="flex items-center gap-6">
+                        {/* Closed deals */}
+                        <div className="text-left">
+                          <div className="text-lg font-bold text-slate-800">{agent.closedLeads}</div>
+                          <div className="text-xs text-slate-500">עסקאות</div>
                         </div>
-                        <div className="w-full bg-slate-200 rounded-full h-1.5">
-                          <div
-                            className={`h-1.5 rounded-full transition-all duration-500 ${
-                              index === 0 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' :
-                              index === 1 ? 'bg-gradient-to-r from-gray-400 to-gray-600' :
-                              index === 2 ? 'bg-gradient-to-r from-amber-600 to-amber-800' :
-                              'bg-gradient-to-r from-blue-500 to-blue-600'
-                            }`}
-                            style={{ width: `${percentage}%` }}
-                          />
+
+                        {/* Success rate with bar */}
+                        <div className="flex items-center gap-2 min-w-[80px]">
+                          <div className="flex-1">
+                            <div className="w-full bg-slate-200 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full transition-all duration-700 ${
+                                  agent.successRate >= 75 ? 'bg-gradient-to-r from-green-400 to-green-600' :
+                                  agent.successRate >= 50 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' :
+                                  agent.successRate >= 25 ? 'bg-gradient-to-r from-orange-400 to-orange-600' :
+                                  'bg-gradient-to-r from-red-400 to-red-600'
+                                }`}
+                                style={{ width: `${agent.successRate}%` }}
+                              />
+                            </div>
+                            <div className="text-xs text-slate-600 mt-1">{agent.successRate.toFixed(0)}%</div>
+                          </div>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-slate-600">הצלחה</span>
-                          <span className="font-semibold text-xs text-slate-700">{agent.successRate.toFixed(0)}%</span>
-                        </div>
+
+                        {/* Medal for top 3 */}
+                        {index < 3 && (
+                          <div className="text-lg">
+                            {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
                 })}
 
               {dbAgents.length === 0 && (
-                <div className="lg:col-span-2 text-center py-6">
+                <div className="text-center py-8">
                   <p className="text-gray-500 text-sm">אין סוכנים במערכת עדיין</p>
                 </div>
               )}
@@ -1008,7 +1038,7 @@ export default function FullDashboard() {
                   <th className="text-right py-4 px-5 text-sm font-semibold text-slate-600">שיוך</th>
                   <th className="text-right py-4 px-5 text-sm font-semibold text-slate-600">סטטוס</th>
                   <th className="text-right py-4 px-5 text-sm font-semibold text-slate-600">תאריך שיחה</th>
-                  <th className="text-right py-4 px-5 text-sm font-semibold text-slate-600">מחיר</th>
+                  <th className="text-right py-4 px-5 text-sm font-semibold text-slate-600">מחיר סגירה</th>
                   <th className="text-right py-4 px-5 text-sm font-semibold text-slate-600">הערות</th>
                   <th className="text-right py-4 px-5 text-sm font-semibold text-slate-600">סוכן</th>
                 </tr>
@@ -1268,7 +1298,7 @@ export default function FullDashboard() {
                                   <div
                                     className={`${canEditPrice ? 'cursor-pointer hover:bg-slate-100' : 'cursor-default'} rounded p-1 min-h-[24px] flex items-center`}
                                     onClick={() => canEditPrice && startEditing(lead.id, 'price', lead.price || '')}
-                                    title={canEditPrice ? 'לחץ לעריכת המחיר' : 'עריכת מחיר מאופשרת רק למנהל, מתאם או סוכן המטפל'}
+                                    title={canEditPrice ? 'לחץ לעריכת מחיר הסגירה' : 'עריכת מחיר סגירה מאופשרת רק למנהל, מתאם או סוכן המטפל'}
                                   >
                                     {lead.price ? (
                                       <div className="flex items-center gap-1">
@@ -1278,7 +1308,7 @@ export default function FullDashboard() {
                                       </div>
                                     ) : (
                                       <span className="text-sm text-slate-400">
-                                        {canEditPrice ? 'לחץ להוספת מחיר...' : '-'}
+                                        {canEditPrice ? 'לחץ להוספת מחיר סגירה...' : '-'}
                                       </span>
                                     )}
                                   </div>
