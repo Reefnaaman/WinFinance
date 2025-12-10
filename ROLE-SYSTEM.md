@@ -42,6 +42,17 @@
 - ❌ **Cannot create leads** - no manual lead entry access
 - ❌ **No system access** - only see leads page
 
+### 🟠 Lead Supplier (`role: 'lead_supplier'`)
+**Purpose: External lead generation partners**
+
+**Capabilities:**
+- ✅ **Submit leads** - can create new leads in the system
+- ✅ **View submitted leads** - see status of leads they provided
+- ✅ **Track performance** - view conversion rates of their leads
+- ❌ **Cannot manage other leads** - no access to leads from other sources
+- ❌ **Cannot assign agents** - no lead assignment capabilities
+- ❌ **Limited system access** - focused interface for lead submission only
+
 ## Database Schema
 
 ```sql
@@ -49,7 +60,7 @@ CREATE TABLE public.agents (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    role TEXT CHECK (role IN ('admin', 'coordinator', 'agent')) DEFAULT 'agent',
+    role TEXT CHECK (role IN ('admin', 'coordinator', 'agent', 'lead_supplier')) DEFAULT 'agent',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 ```
@@ -65,6 +76,7 @@ CREATE TABLE public.agents (
 | דור | dor@winfinance.com | agent | ✅ | ✅ |
 | עדי | adi@winfinance.com | agent | ✅ | ✅ |
 | אוריאל | oriel@winfinance.com | agent | ✅ | ✅ |
+| ספק לידים | supplier@winfinance.com | lead_supplier | ❌ | ❌ |
 
 ## Implementation Logic
 
