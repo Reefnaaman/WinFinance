@@ -1474,6 +1474,7 @@ export default function FullDashboard() {
     const [loading, setLoading] = useState(false);
     const [testing, setTesting] = useState(false);
     const [checking, setChecking] = useState(false);
+    const [showDetailedInstructions, setShowDetailedInstructions] = useState(false);
     const [formData, setFormData] = useState({
       email_host: 'imap.gmail.com',
       email_port: 993,
@@ -1603,14 +1604,91 @@ export default function FullDashboard() {
 
         {/* Instructions */}
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-          <h3 className="font-medium mb-2">הוראות הגדרה מהירות:</h3>
-          <ol className="list-decimal list-inside space-y-1">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-medium">הוראות הגדרה מהירות:</h3>
+            <button
+              onClick={() => setShowDetailedInstructions(!showDetailedInstructions)}
+              className="px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-full transition-colors flex items-center gap-1"
+            >
+              <span>{showDetailedInstructions ? 'הסתר הוראות מפורטות' : 'הוראות מפורטות'}</span>
+              <span className={`transform transition-transform ${showDetailedInstructions ? 'rotate-180' : ''}`}>⌄</span>
+            </button>
+          </div>
+
+          <ol className="list-decimal list-inside space-y-1 mb-3">
             <li>הפעל אימות דו-שלבי בחשבון Gmail</li>
             <li>צור סיסמת אפליקציה: Google Account → Security → App passwords</li>
             <li>השתמש בסיסמת האפליקציה (16 תווים) ולא בסיסמה הרגילה</li>
             <li>הגדר כתובות מייל מפוקחות (מופרדות בפסיק)</li>
             <li>הפעל מוניטור אחרי שמירת הגדרות</li>
           </ol>
+
+          {showDetailedInstructions && (
+            <div className="border-t border-blue-200 pt-4 mt-4">
+              <h4 className="font-semibold mb-3 text-blue-900">📧 הוראות מפורטות ליצירת סיסמת אפליקציה ב-Gmail:</h4>
+
+              <div className="space-y-4">
+                <div>
+                  <h5 className="font-medium mb-2 text-blue-800">🔒 למה נדרש סיסמת אפליקציה?</h5>
+                  <ul className="list-disc list-inside space-y-1 text-blue-700 mr-4">
+                    <li>Gmail דורש <strong>סיסמת אפליקציה</strong> (לא הסיסמה הרגילה) עבור אפליקציות חיצוניות</li>
+                    <li>סיסמאות אפליקציה הן קודים של 16 תווים המספקים גישה בטוחה לחשבון Gmail</li>
+                    <li>נדרש כאשר יש לך <strong>אימות דו-שלבי</strong> מופעל</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 className="font-medium mb-2 text-blue-800">⚙️ איך ליצור סיסמת אפליקציה:</h5>
+                  <ol className="list-decimal list-inside space-y-2 text-blue-700 mr-4">
+                    <li>
+                      <strong>עבור להגדרות חשבון Google:</strong>
+                      <div className="mr-4 mt-1">
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-mono">myaccount.google.com</span>
+                      </div>
+                    </li>
+                    <li>
+                      <strong>לך לטאב "אבטחה" (Security)</strong>
+                    </li>
+                    <li>
+                      <strong>הפעל "אימות דו-שלבי" (2-Step Verification)</strong> - אם עדיין לא מופעל
+                    </li>
+                    <li>
+                      <strong>חפש "סיסמאות אפליקציה" (App passwords)</strong> בהגדרות
+                    </li>
+                    <li>
+                      <strong>בחר "Mail" כסוג האפליקציה</strong>
+                    </li>
+                    <li>
+                      Google ייצור <span className="bg-yellow-100 text-yellow-800 px-1 py-0.5 rounded font-mono">סיסמה של 16 תווים</span> כמו: <span className="font-mono bg-blue-100 px-1 py-0.5 rounded">abcd efgh ijkl mnop</span>
+                    </li>
+                  </ol>
+                </div>
+
+                <div>
+                  <h5 className="font-medium mb-2 text-blue-800">💡 שימוש בהגדרות מייל:</h5>
+                  <div className="bg-blue-100 p-3 rounded border text-blue-800">
+                    <div className="mb-2"><strong>אימייל:</strong> <span className="font-mono">your-gmail@gmail.com</span></div>
+                    <div className="mb-2"><strong>סיסמה:</strong> <span className="font-mono bg-yellow-100 text-yellow-800 px-1 py-0.5 rounded">[16-character app password]</span> ← השתמש בזה</div>
+                    <div className="text-xs text-red-700"><strong>❌ לא תשתמש:</strong> הסיסמה הרגילה שלך ל-Gmail</div>
+                  </div>
+                </div>
+
+                <div>
+                  <h5 className="font-medium mb-2 text-blue-800">🔍 דוגמה:</h5>
+                  <div className="space-y-1 text-blue-700">
+                    <div>סיסמה רגילה: <span className="line-through">MyGmail123!</span></div>
+                    <div>סיסמת אפליקציה: <span className="bg-green-100 text-green-800 px-1 py-0.5 rounded font-mono">abcd efgh ijkl mnop</span> ← השתמש בזה</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded">
+                <p className="text-green-800 text-xs">
+                  <strong>💬 למה זה נחוץ?</strong> המערכת צריכה להתחבר ל-Gmail דרך IMAP כדי לייבא לידים באופן אוטומטי מאימיילים נכנסים.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
