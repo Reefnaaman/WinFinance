@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
-  return NextResponse.json({
-    message: 'Use POST to trigger Gmail check'
-  })
+  // Vercel cron jobs use GET requests
+  // Call the same logic as POST
+  return POST(new NextRequest('GET', 'https://winfinance.co.il/api/check-gmail'))
 }
