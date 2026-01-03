@@ -120,16 +120,17 @@ export default function FullDashboard() {
   // Dynamic sources - includes lead providers
   const leadProviders = dbAgents.filter(agent => agent.role === 'lead_supplier');
   const sources = [
-    { id: 'Email', label: 'Email', color: 'bg-blue-500', lightBg: 'bg-blue-50', text: 'text-blue-700' },
+    { id: 'Email', label: 'Email', icon: 'Mail', color: 'bg-blue-500', lightBg: 'bg-blue-50', text: 'text-blue-700' },
     ...leadProviders.map((provider, index) => ({
       id: provider.name,
       label: provider.name,
+      icon: 'Users',
       color: ['bg-emerald-500', 'bg-teal-500', 'bg-green-500', 'bg-cyan-500'][index % 4],
       lightBg: ['bg-emerald-50', 'bg-teal-50', 'bg-green-50', 'bg-cyan-50'][index % 4],
       text: ['text-emerald-700', 'text-teal-700', 'text-green-700', 'text-cyan-700'][index % 4]
     })),
-    { id: 'Manual', label: 'ידני', color: 'bg-purple-500', lightBg: 'bg-purple-50', text: 'text-purple-700' },
-    { id: 'Other', label: 'אחר', color: 'bg-slate-500', lightBg: 'bg-slate-50', text: 'text-slate-700' },
+    { id: 'Manual', label: 'ידני', icon: 'Edit', color: 'bg-purple-500', lightBg: 'bg-purple-50', text: 'text-purple-700' },
+    { id: 'Other', label: 'אחר', icon: 'MoreHorizontal', color: 'bg-slate-500', lightBg: 'bg-slate-50', text: 'text-slate-700' },
   ];
 
   // Status definitions - all 7 statuses from database
@@ -237,9 +238,9 @@ export default function FullDashboard() {
         const statusPriority: Record<string, number> = {
           'ליד חדש': 1,
           'אין מענה - לתאם מחדש': 2,
-          'התקיימה - במעקב': 3,
-          'התקיימה - נחתם': 4,
-          'התקיימה - נכשל': 5,
+          'במעקב': 3,
+          'עסקה נסגרה': 4,
+          'התקיימה - כשלון': 5,
           'לא רלוונטי': 6
         };
         const aPriority = statusPriority[a.status || ''] || 999;

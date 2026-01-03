@@ -26,7 +26,10 @@ export default function GmailConnect() {
       const { data, error } = await supabase
         .from('gmail_tokens')
         .select('user_email, token_expiry')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false }) as {
+          data: { user_email: string; token_expiry: string }[] | null;
+          error: any
+        }
 
       console.log('Gmail tokens query result:', {
         data,

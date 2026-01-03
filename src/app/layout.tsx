@@ -17,6 +17,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "WinFinance - Lead Management",
   description: "Lead management system for WinFinance",
+  icons: {
+    icon: '/winfinance-logo-no-text.png',
+    apple: '/winfinance-logo-no-text.png',
+    shortcut: '/winfinance-logo-no-text.png',
+  },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({

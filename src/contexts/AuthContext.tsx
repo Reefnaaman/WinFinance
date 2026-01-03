@@ -118,11 +118,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setLoading(false)
 
           // Try to fetch the real data in background (non-blocking)
-          supabase
+          Promise.resolve(supabase
             .from('agents')
             .select('*')
             .eq('email', email)
-            .single()
+            .single())
             .then(({ data }) => {
               if (data) {
                 console.log('Background fetch successful, updating user data')

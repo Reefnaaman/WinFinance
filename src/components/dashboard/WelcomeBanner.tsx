@@ -110,7 +110,7 @@ export default function WelcomeBanner({
             {totalRevenue.toLocaleString('he-IL', { style: 'currency', currency: 'ILS', minimumFractionDigits: 0 })}
           </p>
           <p className="text-blue-200 text-xs">
-            {analyticsLeads.filter(l => l.status === 'התקיימה - נחתם' && l.price).length}/{closedLeads} עם מחיר
+            {analyticsLeads.filter(l => l.status === 'עסקה נסגרה' && l.price).length}/{closedLeads} עם מחיר
           </p>
         </div>
 

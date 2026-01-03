@@ -74,9 +74,9 @@ const handler = NextAuth({
       return refreshAccessToken(token)
     },
 
-    async session({ session, token }) {
-      session.accessToken = token.accessToken
-      session.error = token.error
+    async session({ session, token }: any) {
+      session.accessToken = token.accessToken as string | undefined
+      session.error = token.error as string | undefined
 
       // Add Gmail connection status
       if (session.user?.email) {

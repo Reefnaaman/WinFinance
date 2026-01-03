@@ -37,7 +37,7 @@ export default function EnhancedAgentLeaderboard({
   // Calculate revenue for each agent manually
   const agentsWithRevenue = agentData.map((agent, index) => {
     const agentLeads = analyticsLeads.filter(l => l.assigned_agent_id === agent.id);
-    const closedDeals = agentLeads.filter(l => l.status === 'התקיימה - נחתם');
+    const closedDeals = agentLeads.filter(l => l.status === 'עסקה נסגרה');
     const totalRevenue = closedDeals
       .filter(l => l.price && !isNaN(Number(l.price)))
       .reduce((sum, lead) => sum + Number(lead.price), 0);

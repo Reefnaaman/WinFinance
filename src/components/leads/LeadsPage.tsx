@@ -56,10 +56,6 @@ interface LeadsPageProps {
   pullDistance: number;
   handleRefresh: () => Promise<void>;
   setPullDistance: (distance: number) => void;
-  sortBy: 'status' | 'date' | 'name' | 'agent';
-  setSortBy: (sort: 'status' | 'date' | 'name' | 'agent') => void;
-  sortOrder: 'asc' | 'desc';
-  setSortOrder: (order: 'asc' | 'desc') => void;
 }
 
 export default function LeadsPage({
@@ -192,10 +188,10 @@ export default function LeadsPage({
         {user?.role === 'agent' && (() => {
           const agentLeads = filteredLeads;
           const totalAssigned = agentLeads.length;
-          const dealsSigned = agentLeads.filter(l => l.status === 'התקיימה - נחתם').length;
-          const inFollowUp = agentLeads.filter(l => l.status === 'התקיימה - במעקב').length;
+          const dealsSigned = agentLeads.filter(l => l.status === 'עסקה נסגרה').length;
+          const inFollowUp = agentLeads.filter(l => l.status === 'במעקב').length;
           const noAnswer = agentLeads.filter(l => l.status === 'אין מענה - לתאם מחדש').length;
-          const failed = agentLeads.filter(l => l.status === 'התקיימה - נכשל').length;
+          const failed = agentLeads.filter(l => l.status === 'התקיימה - כשלון').length;
 
           const successRate = totalAssigned > 0 ? Math.round((dealsSigned / totalAssigned) * 100) : 0;
           const responseRate = totalAssigned > 0 ? Math.round(((totalAssigned - noAnswer) / totalAssigned) * 100) : 0;
@@ -458,7 +454,7 @@ export default function LeadsPage({
                               </svg>
                             </a>
                             {/* Delete button - repositioned to right side of phone button */}
-                            {(user?.role === 'admin' || user?.role === 'coordinator') && expandedMobileCards.has(lead.id) && (
+                            {user?.role === 'admin' && expandedMobileCards.has(lead.id) && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -1247,7 +1243,7 @@ export default function LeadsPage({
 
                             {/* Delete Button */}
                             <div className="col-span-1 flex items-center justify-end pr-0">
-                              {(user?.role === 'admin' || user?.role === 'coordinator') && (
+                              {user?.role === 'admin' && (
                                 <button
                                   onClick={() => {
                                     if (confirm('האם אתה בטוח שברצונך למחוק את הליד הזה? פעולה זו לא ניתנת לביטול.')) {

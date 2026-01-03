@@ -8,6 +8,7 @@ const supabase = createClient(
 )
 
 interface EmailSettings {
+  id: string
   email_host: string
   email_port: number
   email_username: string
@@ -229,12 +230,12 @@ export class EmailMonitor {
           }
 
           // Search for unseen emails from monitored addresses
-          const searchCriteria = ['UNSEEN']
+          let searchCriteria: any[] = ['UNSEEN']
 
           // If we have specific monitored addresses, search for emails from those addresses
           if (this.settings!.monitored_email_addresses.length > 0) {
             const fromCriteria = this.settings!.monitored_email_addresses.map(email => ['FROM', email])
-            searchCriteria.push(['OR', ...fromCriteria])
+            searchCriteria = ['UNSEEN', ['OR', ...fromCriteria]]
           }
 
           this.imap!.search(searchCriteria, (err, results) => {
@@ -335,7 +336,7 @@ export class EmailMonitor {
         })
       })
 
-      this.imap.once('error', (err) => {
+      this.imap.once('error', (err: any) => {
         console.error('IMAP connection error:', err)
         reject(err)
       })
@@ -374,7 +375,7 @@ export class EmailMonitor {
           resolve({ success: true, message: 'חיבור למייל הצליח!' })
         })
 
-        testImap.once('error', (err) => {
+        testImap.once('error', (err: any) => {
           resolve({ success: false, message: `שגיאה בחיבור: ${err.message}` })
         })
 

@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { Lead, Agent, LeadUpdate } from '@/lib/database.types';
+import { Lead, Agent } from '@/lib/database.types';
 
 export const formatPhoneNumber = (phone: string) => {
   if (!phone) return phone;
@@ -28,10 +28,11 @@ export const updateLeadField = async (leadId: string, field: string, value: any)
       if (value === 'לא רלוונטי') {
         const { error } = await supabase
           .from('leads')
+          // @ts-ignore
           .update({
             relevance_status: value,
             status: 'לא רלוונטי'
-          } as any)
+          })
           .eq('id', leadId);
         if (error) throw error;
         return;
@@ -39,6 +40,7 @@ export const updateLeadField = async (leadId: string, field: string, value: any)
       // If changing to 'רלוונטי', check if agent is assigned
       if (value === 'רלוונטי') {
         // Get the current lead data
+        // @ts-ignore
         const { data: lead } = await supabase
           .from('leads')
           .select('assigned_agent_id, status')
@@ -46,13 +48,15 @@ export const updateLeadField = async (leadId: string, field: string, value: any)
           .single();
 
         // If agent is assigned and status is 'ליד חדש', update to 'תואם'
+        // @ts-ignore
         if (lead?.assigned_agent_id && lead?.status === 'ליד חדש') {
           const { error } = await supabase
             .from('leads')
+            // @ts-ignore
             .update({
               relevance_status: value,
               status: 'תואם'
-            } as any)
+            })
             .eq('id', leadId);
           if (error) throw error;
           return;
@@ -63,6 +67,7 @@ export const updateLeadField = async (leadId: string, field: string, value: any)
     // Special handling for agent assignment
     if (field === 'assigned_agent_id' && value) {
       // Get the current lead data
+      // @ts-ignore
       const { data: lead } = await supabase
         .from('leads')
         .select('relevance_status, status')
@@ -70,13 +75,15 @@ export const updateLeadField = async (leadId: string, field: string, value: any)
         .single();
 
       // If lead is relevant and status is 'ליד חדש', update to 'תואם'
+      // @ts-ignore
       if (lead?.relevance_status === 'רלוונטי' && lead?.status === 'ליד חדש') {
         const { error } = await supabase
           .from('leads')
+          // @ts-ignore
           .update({
             assigned_agent_id: value,
             status: 'תואם'
-          } as any)
+          })
           .eq('id', leadId);
         if (error) throw error;
         return;
@@ -86,7 +93,8 @@ export const updateLeadField = async (leadId: string, field: string, value: any)
     // Normal update for other fields
     const { error } = await supabase
       .from('leads')
-      .update({ [field]: value } as any)
+      // @ts-ignore
+      .update({ [field]: value })
       .eq('id', leadId);
 
     if (error) throw error;
