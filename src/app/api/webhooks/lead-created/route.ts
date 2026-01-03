@@ -1,16 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Missing required Supabase environment variables')
+  }
+
+  return createClient(supabaseUrl, supabaseServiceKey)
+}
 
 // Webhook secret for security
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || 'WinFinance2025!'
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient()
+
     // Verify webhook secret
     const authHeader = request.headers.get('authorization')
     const webhookSecret = request.headers.get('x-webhook-secret')

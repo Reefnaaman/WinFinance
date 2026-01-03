@@ -2,10 +2,16 @@ import { google } from 'googleapis'
 import { OAuth2Client } from 'google-auth-library'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Missing required Supabase environment variables')
+  }
+
+  return createClient(supabaseUrl, supabaseServiceKey)
+}
 
 export class GmailService {
   private oauth2Client: OAuth2Client
@@ -20,6 +26,7 @@ export class GmailService {
 
   async getAuthenticatedClient(userEmail: string): Promise<OAuth2Client | null> {
     try {
+      const supabase = getSupabaseClient()
       // Get tokens from database
       const { data: tokenData, error } = await supabase
         .from('gmail_tokens')
@@ -50,7 +57,8 @@ export class GmailService {
           ? new Date(credentials.expiry_date).toISOString()
           : new Date(Date.now() + 3600 * 1000).toISOString()
 
-        await supabase
+        const supabaseUpdate = getSupabaseClient()
+        await supabaseUpdate
           .from('gmail_tokens')
           .update({
             access_token: credentials.access_token,

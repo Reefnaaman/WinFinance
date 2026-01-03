@@ -2,10 +2,16 @@ import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Missing required Supabase environment variables')
+  }
+
+  return createClient(supabaseUrl, supabaseServiceKey)
+}
 
 const handler = NextAuth({
   providers: [
@@ -31,6 +37,7 @@ const handler = NextAuth({
 
         // Save Gmail tokens to database
         if (account.access_token && account.refresh_token) {
+          const supabase = getSupabaseClient()
           const tokenExpiry = account.expires_at
             ? new Date(account.expires_at * 1000).toISOString()
             : new Date(Date.now() + 3600 * 1000).toISOString()
@@ -80,6 +87,7 @@ const handler = NextAuth({
 
       // Add Gmail connection status
       if (session.user?.email) {
+        const supabase = getSupabaseClient()
         const { data } = await supabase
           .from('gmail_tokens')
           .select('token_expiry')
@@ -128,6 +136,7 @@ async function refreshAccessToken(token: any) {
 
     // Update tokens in database
     if (token.user?.email) {
+      const supabase = getSupabaseClient()
       const tokenExpiry = refreshedTokens.expires_in
         ? new Date(Date.now() + refreshedTokens.expires_in * 1000).toISOString()
         : new Date(Date.now() + 3600 * 1000).toISOString()

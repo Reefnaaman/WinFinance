@@ -2,10 +2,16 @@ import Imap from 'imap'
 import { simpleParser } from 'mailparser'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Missing required Supabase environment variables')
+  }
+
+  return createClient(supabaseUrl, supabaseServiceKey)
+}
 
 interface EmailSettings {
   id: string
@@ -38,6 +44,7 @@ export class EmailMonitor {
 
   private async loadSettings(): Promise<boolean> {
     try {
+      const supabase = getSupabaseClient()
       const { data, error } = await supabase
         .from('email_settings')
         .select('*')
@@ -132,6 +139,7 @@ export class EmailMonitor {
 
   private async createLeadFromParsedData(parsedLead: ParsedLead, originalEmail: any): Promise<string | null> {
     try {
+      const supabase = getSupabaseClient()
       const notes = []
 
       if (parsedLead.campaign) {
@@ -181,6 +189,7 @@ export class EmailMonitor {
 
   private async logEmailProcessing(messageId: string, senderEmail: string, subject: string, status: 'success' | 'failed' | 'skipped', leadId?: string, errorMessage?: string): Promise<void> {
     try {
+      const supabase = getSupabaseClient()
       await supabase
         .from('email_processing_log')
         .insert([{
@@ -199,6 +208,7 @@ export class EmailMonitor {
 
   private async isEmailAlreadyProcessed(messageId: string): Promise<boolean> {
     try {
+      const supabase = getSupabaseClient()
       const { data, error } = await supabase
         .from('email_processing_log')
         .select('id')
@@ -347,6 +357,7 @@ export class EmailMonitor {
 
   private async updateLastCheckDate(): Promise<void> {
     try {
+      const supabase = getSupabaseClient()
       await supabase
         .from('email_settings')
         .update({
