@@ -77,117 +77,107 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Fetching user data for email:', email)
 
-      // TEMPORARY: Create a mock user based on email to bypass database issues
-      // This allows us to test if the rest of the app works
-      const mockUsers: { [key: string]: Agent } = {
-        'peleg@winfinance.com': {
-          id: '1',
-          name: 'פלג',
-          email: 'peleg@winfinance.com',
-          role: 'admin',
-          created_at: new Date().toISOString()
-        },
-        'leah@winfinance.com': {
-          id: '2',
-          name: 'לאה',
-          email: 'leah@winfinance.com',
-          role: 'coordinator',
-          created_at: new Date().toISOString()
-        },
-        'yakir@winfinance.com': {
-          id: '3',
-          name: 'יקיר',
-          email: 'yakir@winfinance.com',
-          role: 'agent',
-          created_at: new Date().toISOString()
-        },
-        'idan@winfinance.com': {
-          id: '4',
-          name: 'עידן',
-          email: 'idan@winfinance.com',
-          role: 'agent',
-          created_at: new Date().toISOString()
-        },
-        'dor@winfinance.com': {
-          id: '5',
-          name: 'דור',
-          email: 'dor@winfinance.com',
-          role: 'agent',
-          created_at: new Date().toISOString()
-        },
-        'adi@winfinance.com': {
-          id: '6',
-          name: 'עדי',
-          email: 'adi@winfinance.com',
-          role: 'agent',
-          created_at: new Date().toISOString()
-        },
-        'oriel@winfinance.com': {
-          id: '7',
-          name: 'אוריאל',
-          email: 'oriel@winfinance.com',
-          role: 'agent',
-          created_at: new Date().toISOString()
-        }
-      }
-
-      const mockUser = mockUsers[email]
-
-      if (mockUser) {
-        console.log('Using mock user:', mockUser)
-        setUser(mockUser)
-        setLoading(false)
-        return
-      }
-
-      // If not a mock user, try the real database (but with timeout)
+      // ALWAYS fetch from the real database with timeout
       console.log('Attempting database query...')
 
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Query timeout')), 5000)
-      )
+      // Create a timeout promise that resolves (not rejects) with an error
+      const timeoutPromise = new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({ data: null, error: { message: 'Query timeout after 3 seconds' } })
+        }, 3000) // Reduced to 3 seconds for faster fallback
+      })
 
+      // Create the query promise
       const queryPromise = supabase
         .from('agents')
         .select('*')
         .eq('email', email)
         .single()
 
-      const result = await Promise.race([queryPromise, timeoutPromise]) as any
+      // Race between timeout and query
+      const { data, error } = await Promise.race([
+        queryPromise,
+        timeoutPromise
+      ]) as any
 
-      console.log('Agent query result:', result.data, 'Error:', result.error)
+      console.log('Agent query result:', { data, error, email })
 
-      if (result.error || !result.data) {
-        console.error('Error fetching user data:', result.error)
-        // Fallback to basic user info from auth
-        const fallbackUser: Agent = {
-          id: email,
-          name: email.split('@')[0],
-          email: email,
-          role: 'agent',
-          created_at: new Date().toISOString()
+      if (error) {
+        // Only log as warning for timeout, not error
+        if (error.message && error.message.includes('timeout')) {
+          console.warn('Database query timed out - using session email as fallback')
+          // Create a basic user from the session email
+          const fallbackUser: Agent = {
+            id: email, // Use email as temporary ID
+            name: email.split('@')[0],
+            email: email,
+            role: 'agent', // Default role, will be corrected when DB responds
+            created_at: new Date().toISOString()
+          }
+          setUser(fallbackUser)
+          setLoading(false)
+
+          // Try to fetch the real data in background (non-blocking)
+          supabase
+            .from('agents')
+            .select('*')
+            .eq('email', email)
+            .single()
+            .then(({ data }) => {
+              if (data) {
+                console.log('Background fetch successful, updating user data')
+                setUser(data)
+              }
+            })
+            .catch(() => {
+              // Silently fail - we already have fallback
+            })
+          return
         }
-        console.log('Using fallback user:', fallbackUser)
-        setUser(fallbackUser)
+
+        console.error('Error fetching user data:', error.message || error)
+
+        // Try with case-insensitive search
+        try {
+          const { data: ciData, error: ciError } = await supabase
+            .from('agents')
+            .select('*')
+            .ilike('email', email)
+            .single()
+
+          console.log('Case-insensitive query result:', { data: ciData, error: ciError })
+
+          if (ciData) {
+            console.log('Setting user (case-insensitive match):', ciData)
+            setUser(ciData)
+            setLoading(false)
+            return
+          }
+        } catch (e) {
+          console.error('Case-insensitive search also failed:', e)
+        }
+
+        // Still no match - show error
+        console.error('No agent found for email:', email)
+        setUser(null)
         setLoading(false)
         return
       }
 
-      console.log('Setting user:', result.data)
-      setUser(result.data)
+      if (!data) {
+        console.error('No data returned for email:', email)
+        setUser(null)
+        setLoading(false)
+        return
+      }
+
+      console.log('Setting user:', data)
+      setUser(data)
       setLoading(false)
     } catch (error) {
       console.error('Error in fetchUserData:', error)
-      // Even on error, create a basic user so the app works
-      const fallbackUser: Agent = {
-        id: email,
-        name: email.split('@')[0],
-        email: email,
-        role: 'agent',
-        created_at: new Date().toISOString()
-      }
-      console.log('Error occurred, using fallback user:', fallbackUser)
-      setUser(fallbackUser)
+      // Don't create a fallback user - let the user know there's an issue
+      setUser(null)
       setLoading(false)
     }
   }

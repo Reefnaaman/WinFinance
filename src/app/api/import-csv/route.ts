@@ -37,8 +37,8 @@ function mapStatusToEnum(status: string): string | null {
   if (statusStr.includes('לא תואם')) return 'לא תואם';
   if (statusStr.includes('נסגר') || statusStr.includes('נמכר')) return 'עסקה נסגרה';
 
-  // Map "לא רצה" and similar to "לא תואם" since "לקוח לא רצה" doesn't exist in DB
-  if (statusStr.includes('לא רצה') || statusStr.includes('לא מעוניין')) return 'לא תואם';
+  // Map "לא רצה" and similar to "התקיימה - כשלון"
+  if (statusStr.includes('לא רצה') || statusStr.includes('לא מעוניין')) return 'התקיימה - כשלון';
 
   // Complex status mapping based on your data
   if (statusStr.includes('במעקב')) return 'תואם';

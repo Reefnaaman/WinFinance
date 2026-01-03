@@ -23,7 +23,7 @@ export default function SortingDropdown({
 
   const sortOptions = [
     { value: 'status', label: 'סטטוס' },
-    { value: 'date', label: 'תאריך יצירה' },
+    { value: 'date', label: 'תאריך' },
     { value: 'name', label: 'שם הליד' },
     { value: 'agent', label: 'סוכן' }
   ];

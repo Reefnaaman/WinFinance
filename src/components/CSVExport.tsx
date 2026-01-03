@@ -78,11 +78,14 @@ export default function CSVExport({ currentFilters = {}, agents = [] }: CSVExpor
       {/* Export Button */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-xl text-white font-medium transition-all flex items-center gap-2"
+        className="px-2 md:px-3 h-10 bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200 hover:border-orange-300 rounded-lg transition-all duration-200 flex items-center gap-1 text-xs md:text-sm font-medium hover:shadow-sm whitespace-nowrap hidden md:flex"
       >
-        <span>📤</span> ייצוא לCSV
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <span>ייצוא</span>
         {activeFiltersCount > 0 && (
-          <span className="bg-blue-700 text-xs px-2 py-0.5 rounded-full">
+          <span className="bg-orange-200 text-orange-800 text-xs px-1.5 py-0.5 rounded-full">
             {activeFiltersCount}
           </span>
         )}
@@ -164,7 +167,7 @@ export default function CSVExport({ currentFilters = {}, agents = [] }: CSVExpor
                     >
                       <option value="">הכל</option>
                       <option value="לא תואם">לא תואם</option>
-                      <option value="לקוח לא רצה">לקוח לא רצה</option>
+                      <option value="התקיימה - כשלון">התקיימה - כשלון</option>
                       <option value="תואם">תואם</option>
                       <option value="עסקה נסגרה">עסקה נסגרה</option>
                     </select>
@@ -228,7 +231,6 @@ export default function CSVExport({ currentFilters = {}, agents = [] }: CSVExpor
                     >
                       <option value="">הכל</option>
                       <option value="Email">אימייל</option>
-                      <option value="Google Sheet">Google Sheet</option>
                       <option value="Manual">ידני</option>
                       <option value="Other">אחר</option>
                     </select>

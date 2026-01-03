@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ImportResult {
   success: boolean;
@@ -17,7 +18,7 @@ interface CSVImportProps {
 }
 
 export default function CSVImport({ onImportComplete }: CSVImportProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(true);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
@@ -148,7 +149,6 @@ ${colorAnalysis}
       if (data.success) {
         setTimeout(() => {
           onImportComplete();
-          setIsModalOpen(false);
           setFile(null);
           setResult(null);
         }, 3000);
@@ -164,72 +164,130 @@ ${colorAnalysis}
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
+    onImportComplete();
     setFile(null);
     setResult(null);
   };
 
+  // Don't render portal on server side
+  if (typeof window === 'undefined' && isModalOpen) return null;
+
   return (
     <>
-      {/* Import Button */}
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 rounded-xl text-white font-medium transition-all flex items-center gap-2"
-      >
-        <span>📥</span> ייבוא CSV
-      </button>
-
-      {/* Import Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" dir="rtl">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">ייבוא נתונים מ-CSV</h2>
+      {/* Import Modal - Using Portal to render outside of parent containers */}
+      {isModalOpen && createPortal(
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[10000]" dir="rtl">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4 border border-slate-100">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center text-white">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                  </svg>
+                </div>
+                <h2 className="text-xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                  ייבוא נתונים מ-CSV
+                </h2>
+              </div>
               <button
                 onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+                className="w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors"
               >
-                ×
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
             <div className="space-y-4">
               {/* Instructions */}
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h3 className="font-medium text-blue-900 mb-2">הנחיות לייבוא:</h3>
-                <ul className="text-sm text-blue-700 space-y-1">
-                  <li>• העמודות הנדרשות: נייד, סטטוס, תאריך פגישה, שם לקוח, סוכן מטפל</li>
-                  <li>• פורמט תאריך: DD.MM.YY או DD.MM.YYYY</li>
-                  <li>• שמות הסוכנים: עדי בראל, יקיר, דור, עידן, פלג</li>
-                  <li>• לשמירת צבעים: הוסף עמודת "צבע" עם הערכים: ירוק, אדום, צהוב, כחול</li>
-                  <li>• הקובץ חייב להיות בפורמט CSV</li>
-                </ul>
-              </div>
-
-              {/* File Upload */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  בחר קובץ CSV
-                </label>
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Selected File Info */}
-              {file && (
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-sm text-gray-600">
-                    קובץ נבחר: <span className="font-medium">{file.name}</span>
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    גודל: {(file.size / 1024).toFixed(1)} KB
-                  </p>
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <h3 className="font-semibold text-blue-900">הנחיות לייבוא</h3>
                 </div>
-              )}
+                <div className="space-y-2 text-sm text-blue-800">
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-500 mt-0.5">•</span>
+                    <span>העמודות הנדרשות: נייד, סטטוס, תאריך פגישה, שם לקוח, סוכן מטפל</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-500 mt-0.5">•</span>
+                    <span>פורמט תאריך: DD.MM.YY או DD.MM.YYYY</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-500 mt-0.5">•</span>
+                    <span>שמות הסוכנים: עדי בראל, יקיר, דור, עידן, פלג</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-500 mt-0.5">•</span>
+                    <span>לשמירת צבעים: הוסף עמודת "צבע" עם הערכים: ירוק, אדום, צהוב, כחול</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modern File Upload */}
+              <div>
+                <label htmlFor="file-upload" className="block text-sm font-semibold text-slate-700 mb-3">
+                  העלאת קובץ
+                </label>
+                <div className="relative">
+                  <input
+                    id="file-upload"
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileChange}
+                    className="sr-only"
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className={`
+                      block w-full px-6 py-12 border-2 border-dashed rounded-xl cursor-pointer
+                      transition-all duration-200 group
+                      ${file
+                        ? 'border-green-300 bg-green-50 hover:bg-green-100'
+                        : 'border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50'
+                      }
+                    `}
+                  >
+                    <div className="text-center">
+                      {file ? (
+                        <>
+                          <div className="w-12 h-12 mx-auto mb-3 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <p className="text-sm font-semibold text-green-700">
+                            {file.name}
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            {(file.size / 1024).toFixed(1)} KB • לחץ לשינוי הקובץ
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-12 h-12 mx-auto mb-3 bg-slate-200 group-hover:bg-blue-200 rounded-full flex items-center justify-center transition-colors">
+                            <svg className="w-6 h-6 text-slate-500 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                          </div>
+                          <p className="text-sm font-medium text-slate-700 group-hover:text-blue-700">
+                            לחץ להעלאת קובץ CSV
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            או גרור ושחרר את הקובץ כאן
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </label>
+                </div>
+              </div>
 
               {/* Import Result */}
               {result && (
@@ -282,34 +340,60 @@ ${colorAnalysis}
                 <button
                   onClick={handleDetectHeaders}
                   disabled={!file || loading}
-                  className="px-3 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium text-sm"
+                  className="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl hover:from-emerald-600 hover:to-green-700 disabled:from-slate-300 disabled:to-slate-400 disabled:cursor-not-allowed font-medium text-sm shadow-sm hover:shadow-md transition-all"
                 >
-                  זהה כותרות
+                  <span className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    זהה כותרות
+                  </span>
                 </button>
                 <button
                   onClick={handleDebug}
                   disabled={!file || loading}
-                  className="px-3 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium text-sm"
+                  className="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-yellow-600 text-white rounded-xl hover:from-amber-600 hover:to-yellow-700 disabled:from-slate-300 disabled:to-slate-400 disabled:cursor-not-allowed font-medium text-sm shadow-sm hover:shadow-md transition-all"
                 >
-                  בדוק נתונים
+                  <span className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                    </svg>
+                    בדוק נתונים
+                  </span>
                 </button>
                 <button
                   onClick={handleImport}
                   disabled={!file || loading}
-                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:from-slate-300 disabled:to-slate-400 disabled:cursor-not-allowed font-medium shadow-sm hover:shadow-md transition-all"
                 >
-                  {loading ? 'מייבא...' : 'ייבא נתונים'}
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      מייבא...
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                      ייבא נתונים
+                    </span>
+                  )}
                 </button>
                 <button
                   onClick={closeModal}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium"
+                  className="px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 hover:border-slate-300 font-medium transition-all"
                 >
                   ביטול
                 </button>
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

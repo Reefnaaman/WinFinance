@@ -38,13 +38,13 @@ export interface Database {
           lead_name: string
           phone: string
           email: string | null
-          source: 'Email' | 'Google Sheet' | 'Manual' | 'Other'
+          source: string
           created_at: string
-          relevance_status: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי'
+          relevance_status: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי' | 'במעקב'
           assigned_agent_id: string | null
           meeting_date: string | null
           scheduled_call_date: string | null
-          status: 'לא תואם' | 'תואם' | 'עסקה נסגרה' | 'התקיים מעק' | 'תואמה פגישה' | 'נכשל' | 'אין מענה' | 'נמכר' | 'אין מענה - לתאם מחדש' | 'התקיימה - נכשל' | 'התקיימה - נחתם' | 'התקיימה - במעקב' | null
+          status: 'ליד חדש' | 'תואם' | 'אין מענה - לתאם מחדש' | 'התקיימה - כשלון' | 'במעקב' | 'עסקה נסגרה' | 'לא רלוונטי' | null
           agent_notes: string | null
           color_code: string | null
           price: number | null
@@ -55,13 +55,13 @@ export interface Database {
           lead_name: string
           phone: string
           email?: string | null
-          source: 'Email' | 'Google Sheet' | 'Manual' | 'Other'
+          source: string
           created_at?: string
-          relevance_status?: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי'
+          relevance_status?: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי' | 'במעקב'
           assigned_agent_id?: string | null
           meeting_date?: string | null
           scheduled_call_date?: string | null
-          status?: 'לא תואם' | 'תואם' | 'עסקה נסגרה' | 'התקיים מעק' | 'תואמה פגישה' | 'נכשל' | 'אין מענה' | 'נמכר' | 'אין מענה - לתאם מחדש' | 'התקיימה - נכשל' | 'התקיימה - נחתם' | 'התקיימה - במעקב' | null
+          status?: 'ליד חדש' | 'תואם' | 'אין מענה - לתאם מחדש' | 'התקיימה - כשלון' | 'במעקב' | 'עסקה נסגרה' | 'לא רלוונטי' | null
           agent_notes?: string | null
           color_code?: string | null
           price?: number | null
@@ -72,13 +72,13 @@ export interface Database {
           lead_name?: string
           phone?: string
           email?: string | null
-          source?: 'Email' | 'Google Sheet' | 'Manual' | 'Other'
+          source?: string
           created_at?: string
-          relevance_status?: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי'
+          relevance_status?: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי' | 'במעקב'
           assigned_agent_id?: string | null
           meeting_date?: string | null
           scheduled_call_date?: string | null
-          status?: 'לא תואם' | 'תואם' | 'עסקה נסגרה' | 'התקיים מעק' | 'תואמה פגישה' | 'נכשל' | 'אין מענה' | 'נמכר' | 'אין מענה - לתאם מחדש' | 'התקיימה - נכשל' | 'התקיימה - נחתם' | 'התקיימה - במעקב' | null
+          status?: 'ליד חדש' | 'תואם' | 'אין מענה - לתאם מחדש' | 'התקיימה - כשלון' | 'במעקב' | 'עסקה נסגרה' | 'לא רלוונטי' | null
           agent_notes?: string | null
           color_code?: string | null
           price?: number | null
@@ -93,8 +93,8 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      lead_status_enum: 'לא תואם' | 'תואם' | 'עסקה נסגרה' | 'התקיים מעק' | 'תואמה פגישה' | 'נכשל' | 'אין מענה' | 'נמכר'
-      relevance_status_enum: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי'
+      lead_status_enum: 'ליד חדש' | 'תואם' | 'אין מענה - לתאם מחדש' | 'התקיימה - כשלון' | 'במעקב' | 'עסקה נסגרה' | 'לא רלוונטי'
+      relevance_status_enum: 'ממתין לבדיקה' | 'רלוונטי' | 'לא רלוונטי' | 'במעקב'
       role_enum: 'admin' | 'coordinator' | 'agent' | 'lead_supplier'
       source_enum: 'Email' | 'Google Sheet' | 'Manual' | 'Other'
     }
@@ -112,5 +112,5 @@ export type LeadUpdate = Database['public']['Tables']['leads']['Update']
 
 export type LeadStatus = Database['public']['Enums']['lead_status_enum']
 export type RelevanceStatus = Database['public']['Enums']['relevance_status_enum']
-export type SourceType = Database['public']['Enums']['source_enum']
+export type SourceType = string
 export type AgentRole = Database['public']['Enums']['role_enum']

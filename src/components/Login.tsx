@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import Image from 'next/image'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -29,8 +30,14 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-white flex items-center justify-center" dir="rtl">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-8">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-2xl font-bold">W</span>
+          <div className="w-20 h-20 mx-auto mb-4 relative">
+            <Image
+              src="/winfinance-logo-no-text.png"
+              alt="WinFinance Logo"
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
           <h1 className="text-2xl font-bold text-slate-800 mb-2">WinFinance</h1>
           <p className="text-slate-500">התחבר למערכת ניהול הלידים</p>

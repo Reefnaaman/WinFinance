@@ -7,7 +7,20 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 console.log('Initializing Supabase with URL:', supabaseUrl ? 'URL exists' : 'URL missing')
 console.log('Anon key:', supabaseAnonKey ? 'Key exists' : 'Key missing')
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+  db: {
+    schema: 'public'
+  },
+  global: {
+    headers: {
+      'x-application-name': 'lead-management'
+    }
+  }
+})
 
 // Admin client for server-side operations
 export const createServerClient = () => {

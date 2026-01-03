@@ -24,7 +24,7 @@ function formatDate(dateString: string | null): string {
     return date.toLocaleDateString('he-IL', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: '2-digit'
     });
   } catch {
     return dateString || '';

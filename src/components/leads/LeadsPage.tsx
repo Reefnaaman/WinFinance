@@ -436,7 +436,11 @@ export default function LeadsPage({
                             <div>
                               <h3 className="font-semibold text-slate-900">{lead.lead_name}</h3>
                               <p className="text-xs text-slate-500">
-                                נוצר {new Date(lead.created_at).toLocaleDateString('he-IL')}
+                                נוצר {new Date(lead.created_at).toLocaleDateString('he-IL', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: '2-digit'
+                                })}
                               </p>
                             </div>
                           </div>
@@ -667,7 +671,9 @@ export default function LeadsPage({
                                     <span className="text-xs font-medium text-blue-700 group-hover:text-blue-800">
                                       {lead.meeting_date
                                         ? `${new Date(lead.meeting_date).toLocaleDateString('he-IL', {
-                                            day: '2-digit', month: '2-digit'
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: '2-digit'
                                           })} ${new Date(lead.meeting_date).toLocaleTimeString('he-IL', {
                                             hour: '2-digit', minute: '2-digit'
                                           })}`
@@ -846,7 +852,11 @@ export default function LeadsPage({
                                         {lead.lead_name}
                                       </h3>
                                       <p className="text-xs text-slate-500">
-                                        נוצר {new Date(lead.created_at).toLocaleDateString('he-IL')}
+                                        נוצר {new Date(lead.created_at).toLocaleDateString('he-IL', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: '2-digit'
+                                })}
                                       </p>
                                     </div>
                                   )}
@@ -1027,7 +1037,11 @@ export default function LeadsPage({
                                         {lead.lead_name}
                                       </h3>
                                       <p className="text-xs text-slate-500">
-                                        נוצר {new Date(lead.created_at).toLocaleDateString('he-IL')}
+                                        נוצר {new Date(lead.created_at).toLocaleDateString('he-IL', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: '2-digit'
+                                })}
                                       </p>
                                     </div>
                                   )}

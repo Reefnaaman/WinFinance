@@ -88,9 +88,13 @@ export default function FullDashboard() {
   }, []);
 
   // Force agents and lead suppliers to their respective pages
+  // Also set default sorting for agents
   useEffect(() => {
     if (user?.role === 'agent') {
       setCurrentPage('leads');
+      // Automatically sort by date for agents (most recent first)
+      setSortBy('date');
+      setSortOrder('desc');
     } else if (user?.role === 'lead_supplier') {
       setCurrentPage('supplier-dashboard');
     }
@@ -133,7 +137,7 @@ export default function FullDashboard() {
     { id: 'ליד חדש', label: 'ליד חדש', color: 'bg-indigo-500', lightBg: 'bg-indigo-50', text: 'text-indigo-700' },
     { id: 'תואם', label: 'תואם', color: 'bg-purple-500', lightBg: 'bg-purple-50', text: 'text-purple-700' },
     { id: 'אין מענה - לתאם מחדש', label: 'אין מענה - לתאם מחדש', color: 'bg-yellow-500', lightBg: 'bg-yellow-50', text: 'text-yellow-700' },
-    { id: 'לקוח לא \n  רצה', label: 'לקוח לא רצה', color: 'bg-red-500', lightBg: 'bg-red-50', text: 'text-red-700' },
+    { id: 'התקיימה - כשלון', label: 'התקיימה - כשלון', color: 'bg-red-500', lightBg: 'bg-red-50', text: 'text-red-700' },
     { id: 'במעקב', label: 'במעקב', color: 'bg-blue-500', lightBg: 'bg-blue-50', text: 'text-blue-700' },
     { id: 'עסקה נסגרה', label: 'עסקה נסגרה', color: 'bg-green-500', lightBg: 'bg-green-50', text: 'text-green-700' },
     { id: 'לא רלוונטי', label: 'לא רלוונטי', color: 'bg-gray-500', lightBg: 'bg-gray-50', text: 'text-gray-700' },
@@ -143,6 +147,7 @@ export default function FullDashboard() {
     { id: 'ממתין לבדיקה', label: 'ממתין לבדיקה', color: 'bg-yellow-500', lightBg: 'bg-yellow-100', text: 'text-yellow-800' },
     { id: 'רלוונטי', label: 'רלוונטי', color: 'bg-green-500', lightBg: 'bg-green-100', text: 'text-green-800' },
     { id: 'לא רלוונטי', label: 'לא רלוונטי', color: 'bg-red-500', lightBg: 'bg-red-100', text: 'text-red-800' },
+    { id: 'במעקב', label: 'במעקב', color: 'bg-blue-500', lightBg: 'bg-blue-100', text: 'text-blue-800' },
   ];
 
   // Calculate analytics for dashboard pages
@@ -178,8 +183,17 @@ export default function FullDashboard() {
 
   const filteredLeads = dbLeads.filter(lead => {
     // Role-based filtering: agents only see their assigned leads
-    if (user?.role === 'agent' && lead.assigned_agent_id !== user.id) {
-      return false;
+    if (user?.role === 'agent') {
+      const matches = lead.assigned_agent_id === user.id;
+      if (!matches && lead.assigned_agent_id) {
+        console.log('Agent filter mismatch:', {
+          leadAgentId: lead.assigned_agent_id,
+          userId: user.id,
+          userName: user.name,
+          leadName: lead.lead_name
+        });
+      }
+      return matches;
     }
 
     // Lead suppliers only see leads they created
@@ -234,7 +248,25 @@ export default function FullDashboard() {
         break;
 
       case 'date':
-        comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        // Use meeting_date if exists, otherwise use created_at
+        // This ensures scheduled meetings appear based on their meeting date
+        const aDate = a.meeting_date || a.scheduled_call_date || a.created_at;
+        const bDate = b.meeting_date || b.scheduled_call_date || b.created_at;
+
+        // Handle cases where dates might be null/undefined
+        // Leads without meeting dates should appear after those with dates
+        if (!a.meeting_date && !a.scheduled_call_date && (b.meeting_date || b.scheduled_call_date)) {
+          // a has no scheduled date but b does, a should come after b
+          comparison = 1;
+        } else if ((a.meeting_date || a.scheduled_call_date) && !b.meeting_date && !b.scheduled_call_date) {
+          // a has scheduled date but b doesn't, a should come before b
+          comparison = -1;
+        } else {
+          // Both have dates or both don't have dates, compare normally
+          const aTime = aDate ? new Date(aDate).getTime() : 0;
+          const bTime = bDate ? new Date(bDate).getTime() : 0;
+          comparison = aTime - bTime;
+        }
         break;
 
       case 'name':
@@ -251,12 +283,17 @@ export default function FullDashboard() {
     return sortOrder === 'asc' ? comparison : -comparison;
   });
 
-  // Navigation items
-  const navItems = [
-    { id: 'home', label: 'בית', icon: '🏠' },
-    { id: 'leads', label: 'לידים', icon: '👥' },
-    { id: 'settings', label: 'הגדרות', icon: '⚙️' },
-  ];
+  // Navigation items - exclude Settings for coordinators
+  const navItems = user?.role === 'coordinator'
+    ? [
+        { id: 'home', label: 'בית', icon: '🏠' },
+        { id: 'leads', label: 'לידים', icon: '👥' },
+      ]
+    : [
+        { id: 'home', label: 'בית', icon: '🏠' },
+        { id: 'leads', label: 'לידים', icon: '👥' },
+        { id: 'settings', label: 'הגדרות', icon: '⚙️' },
+      ];
 
 
   return (
@@ -284,6 +321,9 @@ export default function FullDashboard() {
 
               {/* Logo */}
               <div className="flex items-center gap-3">
+                <div className="hidden md:block">
+                  <h1 className="text-lg md:text-xl font-bold text-slate-800">WinFinance</h1>
+                </div>
                 <div className="w-10 h-10 md:w-12 md:h-12 relative">
                   <Image
                     src="/winfinance-logo-no-text.png"
@@ -291,9 +331,6 @@ export default function FullDashboard() {
                     fill
                     className="object-contain"
                   />
-                </div>
-                <div className="hidden md:block">
-                  <h1 className="text-lg md:text-xl font-bold text-slate-800">WinFinance</h1>
                 </div>
               </div>
 
