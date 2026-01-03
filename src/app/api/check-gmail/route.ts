@@ -157,8 +157,8 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   // Vercel cron jobs use GET requests
   // Call the same logic as POST
-  return POST(new NextRequest('GET', 'https://winfinance.co.il/api/check-gmail'))
+  return POST(request)
 }
