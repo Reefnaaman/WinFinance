@@ -10,7 +10,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=[Your Supabase Anon Key from .env.local]
 SUPABASE_SERVICE_ROLE_KEY=[Your Supabase Service Role Key from .env.local]
 GOOGLE_CLIENT_ID=[Your Google Client ID from .env.local]
 GOOGLE_CLIENT_SECRET=[Your Google Client Secret from .env.local]
-NEXTAUTH_URL=https://winfinance.co.il
+NEXTAUTH_URL=[Use your-project.vercel.app URL until domain is set up, then https://winfinance.co.il]
 NEXTAUTH_SECRET=[Your NextAuth Secret from .env.local]
 WEBHOOK_SECRET=[Generate a secure webhook secret]
 ```
@@ -19,9 +19,16 @@ WEBHOOK_SECRET=[Generate a secure webhook secret]
 
 ## Important Notes:
 
-1. **NEXTAUTH_URL**: Must be set to your production domain (https://winfinance.co.il)
+1. **NEXTAUTH_URL**:
+   - Initially use your Vercel deployment URL (e.g., `https://your-project.vercel.app`)
+   - Update to `https://winfinance.co.il` once domain is configured
+   - Find your Vercel URL in the Vercel dashboard after deployment
+
 2. **NEXTAUTH_SECRET**: Keep the same secret across environments
-3. **Google OAuth**: Make sure to add https://winfinance.co.il/api/auth/callback/google to your Google Cloud Console authorized redirect URIs
+
+3. **Google OAuth**: Add these to your Google Cloud Console authorized redirect URIs:
+   - For testing: `https://your-project.vercel.app/api/auth/callback/google`
+   - For production: `https://winfinance.co.il/api/auth/callback/google`
 
 ## How to Add in Vercel:
 

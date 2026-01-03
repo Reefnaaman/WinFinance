@@ -43,7 +43,7 @@ export default function CSVImport({ onImportComplete }: CSVImportProps) {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('/api/import-csv-debug', {
+      const response = await fetch('/api/import-csv', {
         method: 'POST',
         body: formData
       });
