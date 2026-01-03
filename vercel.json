@@ -1,5 +1,5 @@
 {
-  "installCommand": "npm ci",
+  "installCommand": "rm -rf node_modules package-lock.json && npm install && npm ls clsx",
   "buildCommand": "npm run build",
   "crons": [
     {
