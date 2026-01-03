@@ -1,2 +1,35 @@
-# Build trigger - Fri Jan 3 17:50:00 IST 2025
-# Testing GitHub-Vercel auto-deployment after reconnection
+# Build artifacts
+.next/
+.turbo/
+.swc/
+tsconfig.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Runtime
+.pnpm-store/
+
+# Documentation
+*.md
+!README.md
+
+# SQL files
+*.sql
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
